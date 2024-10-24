@@ -16,3 +16,8 @@ type PredictActivityResponse struct {
 	TagNumber int    `json:"tag_number"`
 	Activity  string `json:"activity"`
 }
+
+type TorchPredictionResponse struct {
+	Prediction []float32 `json:"prediction"`
+	Message    string    `json:"message"`
+}

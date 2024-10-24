@@ -3,29 +3,9 @@ package utils
 import (
 	"MotionSense/internal/models"
 	"fmt"
-	"github.com/owulveryck/onnx-go"
-	"github.com/owulveryck/onnx-go/backend/x/gorgonnx"
-	"gorgonia.org/tensor"
-	"os"
 )
 
-func LoadModel(modelName string) (m *onnx.Model, be *gorgonnx.Graph, err error) {
-	backend := gorgonnx.NewGraph()
-	model := onnx.NewModel(backend)
-
-	b, err := os.ReadFile("ML/" + modelName)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if err := model.UnmarshalBinary(b); err != nil {
-		return nil, nil, err
-	}
-
-	return model, backend, nil
-}
-
-func PrepareInputTensor(req models.PredictActivityRequest) (tensor.Tensor, error) {
+func PrepareInputData(req models.PredictActivityRequest) ([]float32, error) {
 	if len(req.Acceleration) != 128 || len(req.AngularVelocity) != 128 {
 		return nil, fmt.Errorf("invalid orientation data, expected 128 Axis values")
 	}
@@ -33,11 +13,47 @@ func PrepareInputTensor(req models.PredictActivityRequest) (tensor.Tensor, error
 	flattenedInput := make([]float32, 0, 128*6)
 
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.Acceleration[i].X, req.Acceleration[i].Y, req.Acceleration[i].Z)
-		flattenedInput = append(flattenedInput, req.AngularVelocity[i].X, req.AngularVelocity[i].Y, req.AngularVelocity[i].Z)
+		flattenedInput = append(flattenedInput, req.Acceleration[i].X)
+	}
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.Acceleration[i].Y)
+	}
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.Acceleration[i].Z)
+	}
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].X)
+	}
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Y)
+	}
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Z)
 	}
 
-	t := tensor.New(tensor.WithShape(128, 6), tensor.Of(tensor.Float32), tensor.WithBacking(flattenedInput))
+	return flattenedInput, nil
+}
 
-	return t, nil
+func Argmax(values []float32) int {
+	maxIndex := 0
+	maxValue := values[0]
+	for i, value := range values {
+		if value > maxValue {
+			maxValue = value
+			maxIndex = i
+		}
+	}
+	return maxIndex
+}
+
+func GetLabel(index int) string {
+	labels := map[int]string{
+		0: "WALKING",
+		1: "WALKING_UPSTAIRS",
+		2: "WALKING_DOWNSTAIRS",
+		3: "SITTING",
+		4: "STANDING",
+		5: "LAYING",
+	}
+	return labels[index]
 }
