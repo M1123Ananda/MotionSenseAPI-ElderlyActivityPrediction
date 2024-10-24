@@ -14,4 +14,4 @@ clean:
 install:
 	go get ./...
 
-.PHONY: clean all test clean
+.PHONY: build run test clean install

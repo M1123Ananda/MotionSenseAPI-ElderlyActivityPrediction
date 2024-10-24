@@ -1,1 +1,1 @@
-model_name: dummy_model.onnx
+torch_prediction_endpoint: http://localhost:8555/predictions/combined-model

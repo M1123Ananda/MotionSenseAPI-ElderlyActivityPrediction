@@ -1,10 +1,13 @@
 package service
 
 import (
+	config "MotionSense/configs"
 	"MotionSense/internal/models"
 	"MotionSense/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 )
 
@@ -13,49 +16,60 @@ func PredictActivity(context *gin.Context) {
 
 	if err := context.BindJSON(&req); err != nil {
 		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
 		return
 	}
 
-	model, backend, err := utils.LoadModel("dummy_model.onnx")
+	input, err := utils.PrepareInputData(req)
 	if err != nil {
-		fmt.Println("failed to load model: " + err.Error())
-	}
-
-	fmt.Println(model)
-
-	inputTensor, err := utils.PrepareInputTensor(req)
-	if err != nil {
-		fmt.Println("failed to prepare input tensor: " + err.Error())
+		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
 		return
 	}
 
-	if err := model.SetInput(0, inputTensor); err != nil {
-		fmt.Println("failed to input to model: " + err.Error())
-	}
+	body, err := json.Marshal(map[string]any{
+		"data": input,
+	})
 
-	if err := backend.Run(); err != nil {
-		fmt.Println("failed to run model: " + err.Error())
-	}
-
-	output, err := model.GetOutputTensors()
+	resp, err := utils.CallPostRequest(config.Configuration.TorchPredictionEndpoint, body)
 	if err != nil {
-		fmt.Println("failed to get model output: " + err.Error())
+		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
+		return
+	}
+	defer resp.Body.Close()
+
+	var respBodyModel models.TorchPredictionResponse
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
+		return
 	}
 
-	//fmt.Println(output[0].Shape())
-	//
-	//for i, input := range model.GetInputTensors() {
-	//	fmt.Printf("Input %d: %v\n", i, input)
-	//}
+	err = json.Unmarshal(responseBody, &respBodyModel)
+	if err != nil {
+		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
+		return
+	}
 
-	//op, err := model.GetOutputTensors()
+	if resp.StatusCode != http.StatusOK {
+		context.IndentedJSON(resp.StatusCode, models.PredictActivityResponse{TagNumber: req.TagNumber,
+			Activity: ""})
+		return
+	}
 
-	//for i, output := range op {
-	//	fmt.Printf("Output %d: %v\n", i, output)
-	//}
+	maxIndex := utils.Argmax(respBodyModel.Prediction)
+	labeledPrediction := utils.GetLabel(maxIndex)
 
 	context.IndentedJSON(http.StatusOK, models.PredictActivityResponse{TagNumber: req.TagNumber,
-		Activity: output[0].String()})
+		Activity: labeledPrediction})
 	return
 }
 
@@ -75,5 +89,4 @@ func PredictHighLevel(context *gin.Context) {
 
 	//clean_predictions := utils.ModeFilter(req.Predictions, 5)
 	//clean_positions := utils.ModeFilter(req.Positions, 5)
-
 }

@@ -8,19 +8,10 @@ import (
 
 var Configuration *Config
 
-//var DBConfiguration *DBConfig
-
 type Config struct {
-	ModelName string `yaml:"model_name"`
+	ModelName               string `yaml:"model_name"`
+	TorchPredictionEndpoint string `yaml:"torch_prediction_endpoint"`
 }
-
-//type DBConfig struct {
-//	DBUser     string
-//	DBPassword string
-//	DBName     string
-//	DBHost     string
-//	DBPort     string
-//}
 
 func LoadConfig(path string) {
 	Configuration = &Config{}
@@ -33,18 +24,5 @@ func LoadConfig(path string) {
 		log.Fatalf("error: %v", err)
 	}
 
-	//DBConfiguration = &DBConfig{
-	//	DBUser:     os.Getenv("DB_USER"),
-	//	DBPassword: os.Getenv("DB_PASSWORD"),
-	//	DBName:     os.Getenv("DB_NAME"),
-	//	DBHost:     os.Getenv("DB_HOST"),
-	//	DBPort:     os.Getenv("DB_PORT"),
-	//}
-
 	log.Println("Successfully Loaded Configs")
 }
-
-//func (c *DBConfig) GetDSN() string {
-//	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4",
-//		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName)
-//}
