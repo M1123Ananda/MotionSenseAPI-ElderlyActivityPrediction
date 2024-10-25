@@ -44,12 +44,55 @@ func findMode(window *[]string) string {
 	return mode
 }
 
-func GroupData(cleanPredictions *[]string, cleanPositions *[]string, time *[]string) (groupedPredictions *[]string, groupedPositions *[]string, groupedTimeIntervals *[][]string) {
-	//To be implemented
-	return nil, nil, nil
+func GroupData(cleanPredictions *[]string, cleanPositions *[]string, time *[]string) (groupedPredictions *[]string, groupedPositions *[]string, groupedTime *[]string) {
+	var previousAct string = (*cleanPredictions)[0]
+	var previousPos string = (*cleanPositions)[0]
+	var l int = 0
+
+	groupedPredictions = &[]string{previousAct}
+	groupedPositions = &[]string{previousPos}
+	groupedTime = &[]string{(*time)[0]}
+
+	for i := 1; i < len(*cleanPredictions); i++ {
+
+		if ((*cleanPredictions)[i] != previousAct) || ((*cleanPositions)[i] != previousPos) {
+			*groupedPredictions = append(*groupedPredictions, (*cleanPredictions)[i])
+			*groupedPositions = append(*groupedPositions, (*cleanPositions)[i])
+			*groupedTime = append(*groupedTime, (*time)[i])
+			l++
+		}
+		previousAct = (*groupedPredictions)[l]
+		previousPos = (*groupedPositions)[l]
+	}
+
+	return groupedPredictions, groupedPositions, groupedTime
 }
 
-func CombineAndTransform(groupedPredictions *[]string, groupedPositions *[]string, groupedTime *[]string) (highLevelPredictions *[]string, highLevelTime *[][]string) {
-	//To be implemented
-	return nil, nil
-}
+// func transformAcitivity(act *string, room *string) {
+// 	var static = []string{"SITTING", "STANDIG", "LAYING"}
+
+// 	if slices.Contains(static, *act) {
+// 		if *room == "Toilet" {
+// 			*act = "UsingToilet"
+// 		} else {
+// 			*act = "InActivity"
+// 		}
+// 	} else {
+// 		*act = "WALK_" + *room
+// 	}
+// }
+
+// func CombineAndTransform(groupedPredictions *[]string, groupedPositions *[]string, groupedTime *[]string) (highLevelPredictions *[]string, highLevelTime *[]string) {
+// 	var static = []string{"SITTING", "STANDIG", "LAYING"}
+// 	var dynamic = []string{"WALKING", "WALKING_UPSTAIRS", "WALKING_DOWNSTAIRS"}
+// 	var previousAct string = (*groupedPredictions)[0]
+// 	retPredictions := []string{previousAct}
+// 	retTimes := []string{(*groupedTime)[0]}
+// 	transformAcitivity(&previousAct)
+
+// 	for i := 1; i < len(*groupedPredictions); i++ {
+// 		if ()
+// 	}
+
+// 	return nil, nil
+// }
