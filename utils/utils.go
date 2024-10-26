@@ -1,5 +1,10 @@
 package utils
 
+import (
+	"slices"
+	"strings"
+)
+
 func ModeFilter(sequence *[]string, windowSize int) *[]string {
 	smoothed := make([]string, len(*sequence))
 	halfWindow := windowSize / 2
@@ -68,31 +73,61 @@ func GroupData(cleanPredictions *[]string, cleanPositions *[]string, time *[]str
 	return groupedPredictions, groupedPositions, groupedTime
 }
 
-// func transformAcitivity(act *string, room *string) {
-// 	var static = []string{"SITTING", "STANDIG", "LAYING"}
+func transformAcitivity(acts *[]string, rooms *[]string) {
+	var static = []string{"SITTING", "STANDING", "LAYING"}
+	for i := 0; i < len(*acts); i++ {
+		if slices.Contains(static, (*acts)[i]) {
+			if (*rooms)[i] == "Toilet" {
+				if (*acts)[i] != "LAYING" { // Laying in toilet ???
+					(*acts)[i] = "UsingToilet"
+				}
+			} else { // Static Activity = InActivity
+				(*acts)[i] = "InActivity"
+			}
+		} else { // Dynamic = Walking
+			(*acts)[i] = "WALKING"
+		}
+	}
+}
 
-// 	if slices.Contains(static, *act) {
-// 		if *room == "Toilet" {
-// 			*act = "UsingToilet"
-// 		} else {
-// 			*act = "InActivity"
-// 		}
-// 	} else {
-// 		*act = "WALK_" + *room
-// 	}
-// }
+func concatRoom(act *string, room *string) {
+	words := strings.Split(*act, "_")
+	if len(words) > 1 {
+		if words[len(words)-1] != *room {
+			*act = words[0] + "_" + words[1] + "_" + *room
+		}
+	} else {
+		if *act != "UsingToilet" {
+			*act = *act + "_" + *room
+		}
+	}
+}
 
-// func CombineAndTransform(groupedPredictions *[]string, groupedPositions *[]string, groupedTime *[]string) (highLevelPredictions *[]string, highLevelTime *[]string) {
-// 	var static = []string{"SITTING", "STANDIG", "LAYING"}
-// 	var dynamic = []string{"WALKING", "WALKING_UPSTAIRS", "WALKING_DOWNSTAIRS"}
-// 	var previousAct string = (*groupedPredictions)[0]
-// 	retPredictions := []string{previousAct}
-// 	retTimes := []string{(*groupedTime)[0]}
-// 	transformAcitivity(&previousAct)
+func CombineAndTransform(groupedPredictions *[]string, groupedPositions *[]string, groupedTime *[]string) (highLevelPredictions *[]string, highLevelTime *[]string) {
+	acts := *groupedPredictions
+	rooms := *groupedPositions
+	transformAcitivity(&acts, &rooms)
+	var currentAct string = acts[0]
+	var currentRoom string = rooms[0]
+	concatRoom(&currentAct, &currentRoom)
+	retPredictions := []string{currentAct}
+	retTimes := []string{(*groupedTime)[0]}
+	l := 0
 
-// 	for i := 1; i < len(*groupedPredictions); i++ {
-// 		if ()
-// 	}
+	for i := 1; i < len(*groupedPredictions); i++ {
+		currentAct = acts[i]
+		currentRoom = rooms[i]
+		if acts[i-1] == currentAct && currentAct != "InActivity" {
+			concatRoom(&retPredictions[l], &currentRoom)
+		} else {
+			concatRoom(&currentAct, &currentRoom)
+			if retPredictions[l] != currentAct {
+				retPredictions = append(retPredictions, currentAct)
+				retTimes = append(retTimes, (*groupedTime)[i])
+				l++
+			}
+		}
+	}
 
-// 	return nil, nil
-// }
+	return &retPredictions, &retTimes
+}
