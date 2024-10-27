@@ -2,9 +2,8 @@ package utils
 
 import (
 	"MotionSense/utils"
-	"testing"
-
 	"github.com/go-playground/assert/v2"
+	"testing"
 )
 
 func TestModeFiltering_Case1(t *testing.T) {
@@ -48,7 +47,7 @@ func TestGroupData_Case1(t *testing.T) {
 		"A", "Toilet", "B", "Toilet",
 		"Toilet", "Toilet", "B", "C",
 		"B", "A", "C", "Toilet"}
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
@@ -66,17 +65,17 @@ func TestGroupData_Case1(t *testing.T) {
 		"2024-09-04 15:45:59.134679+00",
 		"2024-09-04 16:30:12.278455+00"}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"walk", "sit", "lie", "lie",
 		"standing", "lie", "standing", "walk",
 		"sit", "lie", "standing",
 	}
-	expected_rooms := []string{
+	expectedRooms := []string{
 		"B", "A", "Toilet", "B",
 		"Toilet", "B", "C", "B",
 		"A", "C", "Toilet",
 	}
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 06:30:45.123789+00",
 		"2024-09-04 08:00:00.000001+00",
@@ -89,10 +88,10 @@ func TestGroupData_Case1(t *testing.T) {
 		"2024-09-04 15:45:59.134679+00",
 		"2024-09-04 16:30:12.278455+00"}
 
-	result_sequence, result_rooms, result_times := utils.GroupData(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, expected_rooms, result_rooms)
-	assert.Equal(t, expected_sequence, result_sequence)
-	assert.Equal(t, expected_times, result_times)
+	resultSequence, resultRooms, resultTimes := utils.GroupData(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, expectedRooms, resultRooms)
+	assert.Equal(t, expectedSequence, resultSequence)
+	assert.Equal(t, expectedTimes, resultTimes)
 }
 
 func TestGroupData_Case2(t *testing.T) {
@@ -102,26 +101,26 @@ func TestGroupData_Case2(t *testing.T) {
 	rooms := []string{
 		"A", "B", "B", "B"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"walk", "walk"}
-	expected_rooms := []string{
+	expectedRooms := []string{
 		"A", "B"}
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 	}
 
-	result_sequence, result_rooms, result_times := utils.GroupData(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, expected_rooms, result_rooms)
-	assert.Equal(t, expected_sequence, result_sequence)
-	assert.Equal(t, expected_times, result_times)
+	resultSequence, resultRooms, resultTimes := utils.GroupData(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, expectedRooms, resultRooms)
+	assert.Equal(t, expectedSequence, resultSequence)
+	assert.Equal(t, expectedTimes, resultTimes)
 }
 
 func TestGroupData_Case3(t *testing.T) {
@@ -131,22 +130,22 @@ func TestGroupData_Case3(t *testing.T) {
 	rooms := []string{
 		"A"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"walk"}
-	expected_rooms := []string{
+	expectedRooms := []string{
 		"A"}
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 	}
 
-	result_sequence, result_rooms, result_times := utils.GroupData(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, expected_rooms, result_rooms)
-	assert.Equal(t, expected_sequence, result_sequence)
-	assert.Equal(t, expected_times, result_times)
+	resultSequence, resultRooms, resultTimes := utils.GroupData(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, expectedRooms, resultRooms)
+	assert.Equal(t, expectedSequence, resultSequence)
+	assert.Equal(t, expectedTimes, resultTimes)
 }
 
 func TestGroupData_Case4(t *testing.T) {
@@ -156,110 +155,107 @@ func TestGroupData_Case4(t *testing.T) {
 	rooms := []string{
 		"A", "B", "B", "B"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"walk", "walk", "sit", "lie"}
-	expected_rooms := []string{
+	expectedRooms := []string{
 		"A", "B", "B", "B"}
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	result_sequence, result_rooms, result_times := utils.GroupData(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, expected_rooms, result_rooms)
-	assert.Equal(t, expected_sequence, result_sequence)
-	assert.Equal(t, expected_times, result_times)
+	resultSequence, resultRooms, resultTimes := utils.GroupData(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, expectedRooms, resultRooms)
+	assert.Equal(t, expectedSequence, resultSequence)
+	assert.Equal(t, expectedTimes, resultTimes)
 }
 
 func TestCombineAndTransform_Case1(t *testing.T) {
-	//Mos
 	sequence := []string{
 		"WALKING", "WALKING", "SITTING", "LAYING"}
 
 	rooms := []string{
 		"A", "B", "B", "B"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"WALKING_A_B", "InActivity_B"}
 
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 05:45:09.987654+00",
 	}
 
-	result_sequence, result_times := utils.CombineAndTransform(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, &expected_sequence, result_sequence)
-	assert.Equal(t, &expected_times, result_times)
+	resultSequence, resultTimes := utils.CombineAndTransform(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, &expectedSequence, resultSequence)
+	assert.Equal(t, &expectedTimes, resultTimes)
 }
 
 func TestCombineAndTransform_Case2(t *testing.T) {
-	//Mos
 	sequence := []string{
 		"WALKING_DOWNSTAIRS", "WALKING_UPSTAIRS", "SITTING", "LAYING"}
 
 	rooms := []string{
 		"A", "B", "B", "B"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"WALKING_A_B", "InActivity_B"}
 
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 05:45:09.987654+00",
 	}
 
-	result_sequence, result_times := utils.CombineAndTransform(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, &expected_sequence, result_sequence)
-	assert.Equal(t, &expected_times, result_times)
+	resultSequence, resultTimes := utils.CombineAndTransform(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, &expectedSequence, resultSequence)
+	assert.Equal(t, &expectedTimes, resultTimes)
 }
 
 func TestCombineAndTransform_Case3(t *testing.T) {
-	//Mos
 	sequence := []string{
 		"WALKING", "WALKING", "SITTING", "STANDING"}
 
 	rooms := []string{
 		"A", "B", "Toilet", "Toilet"}
 
-	time_stamps := []string{
+	timeStamps := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 04:15:12.123456+00",
 		"2024-09-04 05:45:09.987654+00",
 		"2024-09-04 16:30:12.278455+00",
 	}
 
-	expected_sequence := []string{
+	expectedSequence := []string{
 		"WALKING_A_B", "UsingToilet"}
 
-	expected_times := []string{
+	expectedTimes := []string{
 		"2024-09-04 03:32:35.557727+00",
 		"2024-09-04 05:45:09.987654+00",
 	}
 
-	result_sequence, result_times := utils.CombineAndTransform(&sequence, &rooms, &time_stamps)
-	assert.Equal(t, &expected_sequence, result_sequence)
-	assert.Equal(t, &expected_times, result_times)
+	resultSequence, resultTimes := utils.CombineAndTransform(&sequence, &rooms, &timeStamps)
+	assert.Equal(t, &expectedSequence, resultSequence)
+	assert.Equal(t, &expectedTimes, resultTimes)
 }
