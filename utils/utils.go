@@ -78,8 +78,12 @@ func transformAcitivity(acts *[]string, rooms *[]string) {
 	for i := 0; i < len(*acts); i++ {
 		if slices.Contains(static, (*acts)[i]) {
 			if (*rooms)[i] == "Toilet" {
-				if (*acts)[i] != "LAYING" { // Laying in toilet ???
+				if (*acts)[i] != "LAYING" {
 					(*acts)[i] = "UsingToilet"
+				}
+			} else if (*rooms)[i] == "Bedroom" {
+				if (*acts)[i] == "LAYING" {
+					(*acts)[i] = "Sleep"
 				}
 			} else { // Static Activity = InActivity
 				(*acts)[i] = "InActivity"
