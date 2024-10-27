@@ -22,6 +22,8 @@ func PredictActivity(context *gin.Context) {
 	}
 
 	input, err := utils.PrepareInputData(req)
+
+	fmt.Println(input)
 	if err != nil {
 		fmt.Println(fmt.Errorf(err.Error()))
 		context.IndentedJSON(http.StatusInternalServerError, models.PredictActivityResponse{TagNumber: req.TagNumber,

@@ -13,22 +13,23 @@ func PrepareInputData(req models.PredictActivityRequest) ([]float32, error) {
 	flattenedInput := make([]float32, 0, 128*6)
 
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.Acceleration[i].X)
+		flattenedInput = append(flattenedInput, req.Acceleration[i].X/10)
+	}
+
+	for i := 0; i < 128; i++ {
+		flattenedInput = append(flattenedInput, req.Acceleration[i].Y/10)
 	}
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.Acceleration[i].Y)
+		flattenedInput = append(flattenedInput, req.Acceleration[i].Z/10)
 	}
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.Acceleration[i].Z)
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].X/10)
 	}
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.AngularVelocity[i].X)
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Y/10)
 	}
 	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Y)
-	}
-	for i := 0; i < 128; i++ {
-		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Z)
+		flattenedInput = append(flattenedInput, req.AngularVelocity[i].Z/10)
 	}
 
 	return flattenedInput, nil
