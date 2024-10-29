@@ -78,15 +78,30 @@ func PredictHighLevel(context *gin.Context) {
 	var req models.PredictHighLevelRequest
 
 	if err := context.BindJSON(&req); err != nil {
-		fmt.Println(fmt.Errorf(err.Error()))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictHighLevelResponse{
+			HighLevelActivities: nil,
+			HighLevelTime:       nil,
+		})
 		return
 	}
 
 	if len(req.Predictions) != len(req.Positions) {
-		fmt.Println(fmt.Errorf("predictions and positions array length is not equal"))
+		fmt.Println(fmt.Errorf("predictions and positions array length is not equal %d, %d", len(req.Predictions), len(req.Positions)))
+		context.IndentedJSON(http.StatusInternalServerError, models.PredictHighLevelResponse{
+			HighLevelActivities: nil,
+			HighLevelTime:       nil,
+		})
 		return
 	}
 
-	//clean_predictions := utils.ModeFilter(req.Predictions, 5)
-	//clean_positions := utils.ModeFilter(req.Positions, 5)
+	cleanPredictions := utils.ModeFilter(&req.Predictions, 5)
+	cleanPositions := utils.ModeFilter(&req.Positions, 5)
+	groupedPredictions, groupedPositions, groupedTime := utils.GroupData(cleanPredictions, cleanPositions, &req.Time)
+	highLevelActivities, highLevelTime := utils.CombineAndTransform(groupedPredictions, groupedPositions, groupedTime)
+
+	context.IndentedJSON(http.StatusOK, models.PredictHighLevelResponse{
+		HighLevelActivities: *highLevelActivities,
+		HighLevelTime:       *highLevelTime,
+	})
+	return
 }

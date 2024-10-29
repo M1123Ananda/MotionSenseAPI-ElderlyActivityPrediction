@@ -13,6 +13,7 @@ func main() {
 
 	router := gin.Default()
 	router.POST("/predict", service.PredictActivity)
+	router.POST("/highlevel", service.PredictHighLevel)
 
 	if err := router.Run("0.0.0.0:" + port); err != nil {
 		fmt.Println(fmt.Errorf("failed to run router on port :%s", port))
